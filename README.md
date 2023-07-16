@@ -1,0 +1,2 @@
+# Money Manager
+The goal for this pet project is to automate adding monthly expenses to Splitwise. The application will allow me to upload the file of transactions, which should create drafts of each expense that I can review before submitting them.
