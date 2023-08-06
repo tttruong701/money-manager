@@ -1,11 +1,38 @@
-import React from "react";
+"use client";
+
+import React, { useReducer } from "react";
 import Image from "next/image";
 import FilePreview from "./FilePreview";
 import styles from "../styles/DropZone.module.css";
 import State from "../state";
 import { Actions } from "../actions";
+import { ChaseTransaction, parseFiles } from "../read_csv";
 
-const DropZone = ({ state, dispatch } : {state: State, dispatch: React.Dispatch<Actions>}) => {
+// const DropZone = ({ state, dispatch } : {state: State, dispatch: React.Dispatch<Actions>}) => {
+const DropZone = () => {
+   // reducer function to handle state changes
+   const reducer = (state: State, action: Actions): State => {
+    switch (action.type) {
+      case "SET_IN_DROP_ZONE":
+        return { ...state, inDropZone: action.inDropZone };
+      case "ADD_FILE_TO_LIST":
+        return { ...state, files: state.files.concat(action.files) };
+      case "ADD_TRANSACTIONS":
+          return { ...state, transactions: state.transactions.concat(action.transactions) };
+      default:
+        return state;
+    }
+  };
+
+  // destructuring state and dispatch, initializing files to empty array
+  const [state, dispatch] = useReducer(reducer, {
+    inDropZone: false,
+    files: [],
+    transactions: [],
+  });
+
+
+
   // onDragEnter sets inDropZone to true
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -31,7 +58,7 @@ const DropZone = ({ state, dispatch } : {state: State, dispatch: React.Dispatch<
     dispatch({ type: "SET_IN_DROP_ZONE", inDropZone: true });
   };
 
-  // onDrop sets inDropZone to false and adds files to fileList
+  // onDrop sets inDropZone to false and adds files to files
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -42,12 +69,12 @@ const DropZone = ({ state, dispatch } : {state: State, dispatch: React.Dispatch<
     // ensure a file or files are dropped
     if (files && files.length > 0) {
       // loop over existing files
-      const existingFiles = state.fileList.map((f) => f.name);
-      // check if file already exists, if so, don't add to fileList
+      const existingFiles = state.files.map((f) => f.name);
+      // check if file already exists, if so, don't add to files
       // this is to prevent duplicates
       files = files.filter((f) => !existingFiles.includes(f.name));
 
-      // dispatch action to add droped file or files to fileList
+      // dispatch action to add droped file or files to files
       dispatch({ type: "ADD_FILE_TO_LIST", files });
       // reset inDropZone to false
       dispatch({ type: "SET_IN_DROP_ZONE", inDropZone: false });
@@ -55,18 +82,20 @@ const DropZone = ({ state, dispatch } : {state: State, dispatch: React.Dispatch<
   };
 
   // handle file selection via input element
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     // ensure a file or files are selected
     if (e.target.files && e.target.files.length > 0) {
       let files: File[] = [...e.target.files];
       // loop over existing files
-      const existingFiles: string[] = state.fileList.map((f: File) => f.name);
-      // check if file already exists, if so, don't add to fileList
+      const existingFiles: string[] = state.files.map((f: File) => f.name);
+      // check if file already exists, if so, don't add to files
       // this is to prevent duplicates
       files = files.filter((f: File) => !existingFiles.includes(f.name));
 
-      // dispatch action to add selected file or files to fileList
-      dispatch({ type: "ADD_FILE_TO_LIST", files });
+      const transactions: ChaseTransaction[] = await parseFiles(files);
+
+      // dispatch action to add transactiosn from selected file or files to files
+      dispatch({ type: "ADD_TRANSACTIONS", transactions });
     }
   };
 
@@ -95,7 +124,7 @@ const DropZone = ({ state, dispatch } : {state: State, dispatch: React.Dispatch<
         </h3>
       </div>
       {/* Pass the selectect or dropped files as props */}
-      <FilePreview fileData={state.fileList} />
+      <FilePreview state={state} dispatch={dispatch} />
     </>
   );
 };

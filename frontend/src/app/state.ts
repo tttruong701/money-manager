@@ -1,6 +1,8 @@
+import { ChaseTransaction } from "./read_csv"
+
 // Use extends Record<string, any> ?
 export default interface State {
     inDropZone: boolean
-    // fileList: FileList[]
-    fileList: File[]
+    files: File[]
+    transactions: ChaseTransaction[]
 }

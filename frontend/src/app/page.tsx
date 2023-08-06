@@ -1,30 +1,29 @@
-"use client";
+// "use client";
 
 import React, { useReducer } from "react";
 import Head from "next/head";
 import DropZone from "./components/DropZone";
 import styles from "./styles/Home.module.css";
-import State from "./state";
-import { Actions } from "./actions";
 
 export default function Home() {
-   // reducer function to handle state changes
-   const reducer = (state: State, action: Actions): State => {
-    switch (action.type) {
-      case "SET_IN_DROP_ZONE":
-        return { ...state, inDropZone: action.inDropZone };
-      case "ADD_FILE_TO_LIST":
-        return { ...state, fileList: state.fileList.concat(action.files) };
-      default:
-        return state;
-    }
-  };
+  //  // reducer function to handle state changes
+  //  const reducer = (state: State, action: Actions): State => {
+  //   switch (action.type) {
+  //     case "SET_IN_DROP_ZONE":
+  //       return { ...state, inDropZone: action.inDropZone };
+  //     case "ADD_FILE_TO_LIST":
+  //       return { ...state, files: state.files.concat(action.files) };
+  //     default:
+  //       return state;
+  //   }
+  // };
 
-  // destructuring state and dispatch, initializing fileList to empty array
-  const [state, dispatch] = useReducer(reducer, {
-    inDropZone: false,
-    fileList: [],
-  });
+  // // destructuring state and dispatch, initializing files to empty array
+  // const [state, dispatch] = useReducer(reducer, {
+  //   inDropZone: false,
+  //   files: [],
+  //   transactions: [],
+  // });
 
   return (
     <div className={styles.container}>
@@ -37,7 +36,8 @@ export default function Home() {
       <main className={styles.main}>
         <h1 className={styles.title}>Drag And Drop File Upload</h1>
         {/* Pass state and dispatch to the DropZone component */}
-        <DropZone state={state} dispatch={dispatch} />
+        {/* <DropZone state={state} dispatch={dispatch} /> */}
+        <DropZone/>
       </main>
 
       <footer className={styles.footer}>
